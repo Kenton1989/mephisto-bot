@@ -1,6 +1,7 @@
 import os
 import logging
 import math
+import time
 from random import randint
 
 from nonebot import on_command, CommandSession
@@ -23,8 +24,13 @@ async def hello(session: CommandSession):
     try:
         mx = float(mx_str)
     except:
-        await session.send("识不识数啊你？", at_sender=True)
-        return
+        try:
+            mx = int(mx_str, base=0)
+            await session.send("你以为我只认得十进制啊？", at_sender=True)
+            time.sleep(1)
+        except:
+            await session.send("识不识数啊你？", at_sender=True)
+            return
 
     if mx < 0:
         await session.send("这是什么反物质骰子？", at_sender=True)
@@ -32,8 +38,16 @@ async def hello(session: CommandSession):
 
     mx_int = math.floor(mx)
     if mx_int != mx:
-        rep = "你家骰子能有%2e个面？" % (mx - mx_int)
+        fraction = mx - mx_int
+        if fraction >= 0.01:
+            rep = "你家骰子能有%.2f个面？" % fraction
+        else:
+            rep = "你家骰子能有%.2e个面？" % fraction
         await session.send(rep, at_sender=True)
+        return
+
+    if mx_int <= 0:
+        await session.send("丢空气是吧？", at_sender=True)
         return
 
     if mx_int <= 1:
