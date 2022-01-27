@@ -8,5 +8,5 @@ log = logging.Logger("hello")
 
 @on_command('hello', aliases=('你好'))
 async def hello(session: CommandSession):
-    log.debug("/hello")
+    log.debug("/hello", session.current_arg_text.strip())
     await session.send('你寄吧谁呀')
