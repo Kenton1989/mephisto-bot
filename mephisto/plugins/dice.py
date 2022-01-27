@@ -22,17 +22,11 @@ async def hello(session: CommandSession):
 
     mx_str = session.argv[0]
 
-    if len(mx_str) > 12:
-        await session.send("整这阴间数据有意思🐎？", at_sender=True)
-        return
-
     try:
         mx = float(mx_str)
     except:
         try:
             mx = int(mx_str, base=0)
-            await session.send("你以为我只认得十进制啊？", at_sender=True)
-            time.sleep(1)
         except:
             await session.send("识不识数啊你？", at_sender=True)
             return
@@ -62,6 +56,10 @@ async def hello(session: CommandSession):
     upper_bound = randint(100000000, 200000000)
     if mx_int > upper_bound:
         await session.send("骰子好大，丢不动，爬！", at_sender=True)
+        return
+
+    if len(mx_str) > 12:
+        await session.send("整这阴间输入有意思🐎？", at_sender=True)
         return
 
     await session.send("丢完了，%d点" % randint(1, mx_int))
