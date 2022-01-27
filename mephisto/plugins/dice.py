@@ -7,7 +7,7 @@ from nonebot import on_command, CommandSession
 
 l = logging.Logger('/hello')
 
-@on_command('dice', aliases=('色子', '骰子'))
+@on_command('dice', aliases=('色子', '骰子'), shell_like=True)
 async def hello(session: CommandSession):
 
     arg_cnt = len(session.argv)
@@ -45,7 +45,7 @@ async def hello(session: CommandSession):
         await session.send("骰子好大，丢不动，爬！", at_sender=True)
         return
 
-    await session.send("丢完了，%d点", randint(1, mx_int))
+    await session.send("丢完了，%d点" % randint(1, mx_int))
 
     
 
