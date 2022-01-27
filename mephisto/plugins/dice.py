@@ -21,6 +21,11 @@ async def hello(session: CommandSession):
         return
 
     mx_str = session.argv[0]
+
+    if len(mx_str) > 12:
+        await session.send("整这阴间数据有意思🐎？", at_sender=True)
+        return
+
     try:
         mx = float(mx_str)
     except:
