@@ -11,9 +11,10 @@ from nonebot.message import CanceledException
 
 log = logging.Logger('random_echo')
 
-echo_prob = 0.02
+echo_prob = 0.01
 
 last_sent = None
+
 
 @nonebot.message_preprocessor
 async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: PluginManager):
@@ -23,7 +24,8 @@ async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: Plug
     # check event type
     if event.type != "message" or event.detail_type != "group":
         return
-    msg = event.message
+
+    msg: aiocqhttp.Message = event.message
 
     # avoid infinit echo
     global last_sent
@@ -35,6 +37,10 @@ async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: Plug
     for cmd_prefix in bot.config.COMMAND_START:
         if re.match(cmd_prefix, msg_str):
             return
+
+    # only handle pure text info
+    if any(m.type != 'text' for m in msg):
+        return
 
     nonebot.logger.info("triggered random_echo @[group: %d]", event.group_id)
     last_sent = msg
