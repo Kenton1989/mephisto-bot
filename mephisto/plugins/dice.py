@@ -13,8 +13,8 @@ math_const = {'pi': math.pi, 'π': math.pi, 'e': math.e, 'inf': math.inf}
 eps = 1e-14
 
 
-@on_command('dice', aliases=('色子', '骰子'), shell_like=True)
-async def hello(session: CommandSession):
+@on_command('dice', aliases=('色子', '骰子'), shell_like=True, only_to_me=False)
+async def dice(session: CommandSession):
 
     arg_cnt = len(session.argv)
     if arg_cnt == 0:
