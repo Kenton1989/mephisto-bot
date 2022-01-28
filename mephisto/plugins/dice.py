@@ -38,7 +38,7 @@ async def dice(session: CommandSession):
         await session.send('我读的书少，这事数吗？', at_sender=True)
         return
 
-    if not isinstance(mx, (int, float)):
+    if not isinstance(mx, (int, float)) or math.isnan(mx):
         await session.send('你知道什么是自然数吗？', at_sender=True)
         return
 
