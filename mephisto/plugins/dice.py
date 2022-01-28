@@ -8,7 +8,7 @@ from nonebot import on_command, CommandSession
 
 l = logging.Logger('/hello')
 
-@on_command('dice', aliases=('色子', '骰子'), shell_like=True, only_to_me=False)
+@on_command('dice', aliases=('色子', '骰子'), shell_like=True)
 async def hello(session: CommandSession):
 
     arg_cnt = len(session.argv)
@@ -28,7 +28,7 @@ async def hello(session: CommandSession):
         try:
             mx = int(mx_str, base=0)
         except:
-            await session.send("识不识数啊你？", at_sender=True)
+            await session.send("我读的书少，这事数吗？", at_sender=True)
             return
 
     if mx < 0:
