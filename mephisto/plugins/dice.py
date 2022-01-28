@@ -47,11 +47,11 @@ async def dice(session: CommandSession):
         return
 
     upper_bound = randint(100000000, 200000000)
-    if mx_int > upper_bound:
+    if mx > upper_bound:
         await session.send('骰子好大，丢不动，爬！', at_sender=True)
         return
 
-    mx_int = math.floor(mx)
+    mx_int = int(mx)
     fraction = mx - mx_int
     if fraction > eps:
         if fraction >= 0.01:
