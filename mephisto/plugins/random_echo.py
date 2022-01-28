@@ -11,14 +11,15 @@ from nonebot.message import CanceledException
 
 log = logging.Logger('random_echo')
 
-echo_prob = 0.01
+ECHO_PROB = 0.01
 
 last_sent = None
 
+CAN_ECHO_TYPE = {'text', 'face'}
 
 @nonebot.message_preprocessor
 async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: PluginManager):
-    if random.random() > echo_prob:
+    if random.random() > ECHO_PROB:
         return
 
     # check event type
@@ -38,8 +39,8 @@ async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: Plug
         if re.match(cmd_prefix, msg_str):
             return
 
-    # only handle pure text info
-    if any(m.type != 'text' for m in msg):
+    # check can easily echo or not
+    if any(m.type not in CAN_ECHO_TYPE for m in msg):
         return
 
     nonebot.logger.info("triggered random_echo @[group: %d]", event.group_id)
