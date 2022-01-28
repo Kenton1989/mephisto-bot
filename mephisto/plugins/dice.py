@@ -8,7 +8,7 @@ from nonebot import on_command, CommandSession
 
 l = logging.Logger('/hello')
 
-@on_command('dice', aliases=('色子', '骰子'), shell_like=True)
+@on_command('dice', aliases=('色子', '骰子'), shell_like=True, only_to_me=False)
 async def hello(session: CommandSession):
 
     arg_cnt = len(session.argv)
