@@ -7,10 +7,17 @@ from random import randint
 
 from nonebot import on_command, CommandSession
 
-l = logging.Logger('/hello')
+l = logging.Logger('/dice')
 
-math_const = {'pi': math.pi, 'π': math.pi, 'e': math.e, 'inf': math.inf}
-eps = 1e-14
+MATH_CONST = {'pi': math.pi, 'π': math.pi, 'e': math.e, 'inf': math.inf}
+
+SUB_MAP = {'（': '(', '）': ')', 'ln': 'log', '∞': 'inf'}
+SUB_MAP = dict((re.escape(k), v) for k, v in SUB_MAP.iteritems())
+SUB_RE = re.compile('|'.join(SUB_MAP.keys()))
+
+MAX_PARAM_TXT_LEN = 40
+
+EPS = 1e-14
 
 
 @on_command('dice', aliases=('色子', '骰子'), shell_like=True, only_to_me=False)
@@ -27,13 +34,13 @@ async def dice(session: CommandSession):
 
     mx_str = session.argv[0]
 
-    if len(mx_str) > 15:
+    if len(session.current_arg_text) > MAX_PARAM_TXT_LEN:
         await session.send('太长不看', at_sender=True)
         return
 
-    mx_str = mx_str.replace('∞', 'inf')
+    mx_str = pattern.sub(lambda m: SUB_MAP[re.escape(m.group(0))], mx_str)
     try:
-        mx = ne.evaluate(mx_str, local_dict=math_const).item()
+        mx = ne.evaluate(mx_str, local_dict=MATH_CONST).item()
     except:
         await session.send('我读的书少，这事数吗？', at_sender=True)
         return
@@ -53,7 +60,8 @@ async def dice(session: CommandSession):
 
     mx_int = int(mx)
     fraction = mx - mx_int
-    if fraction > eps:
+    SUB_MAP = {'（': '(', '）': ')', 'ln': 'log'}
+    if fraction > EPS:
         if fraction >= 0.01:
             rep = '你家骰子能有%.2f个面？' % fraction
         else:
