@@ -2,23 +2,17 @@ import os
 import logging
 import math
 import time
-import numexpr as ne
 from random import randint
 
 from nonebot import on_command, CommandSession
 
+import math_expr as me
+
 l = logging.Logger('/dice')
 
-MATH_CONST = {'pi': math.pi, 'π': math.pi, 'e': math.e, 'inf': math.inf}
-
-SUB_MAP = {'（': '(', '）': ')', 'ln': 'log', '∞': 'inf'}
-SUB_MAP = dict((re.escape(k), v) for k, v in SUB_MAP.iteritems())
-SUB_RE = re.compile('|'.join(SUB_MAP.keys()))
-
-MAX_PARAM_TXT_LEN = 40
+MAX_PARAM_TXT_LEN = 12
 
 EPS = 1e-14
-
 
 @on_command('dice', aliases=('色子', '骰子'), shell_like=True, only_to_me=False)
 async def dice(session: CommandSession):
@@ -38,9 +32,8 @@ async def dice(session: CommandSession):
         await session.send('太长不看', at_sender=True)
         return
 
-    mx_str = pattern.sub(lambda m: SUB_MAP[re.escape(m.group(0))], mx_str)
     try:
-        mx = ne.evaluate(mx_str, local_dict=MATH_CONST).item()
+        mx = me.evaluate(mx_str)
     except:
         await session.send('我读的书少，这事数吗？', at_sender=True)
         return
