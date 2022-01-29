@@ -3,19 +3,29 @@ import math
 
 import numexpr as ne
 
-MATH_CONST = {'pi': math.pi, 'π': math.pi, 'e': math.e, 'inf': math.inf}
+MATH_CONST = {
+    'pi': math.pi,
+    'π': math.pi,
+    'e': math.e,
+    'inf': math.inf,
+    'i': 1j,
+    'j': 1j,
+}
+
 
 SUB_MAP = {
     # replace UTF char with ASCII char
     '（': '(',
     '）': ')',
     '，': ',',
+    '－': '-',
     '÷': '/',
     '×': '*',
     '＋': '+',
 
     # replace common synonym
     'ln': 'log',
+    'lg': 'log10',
     '∞': 'inf',
     'mod': '%',
 }
