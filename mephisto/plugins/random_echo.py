@@ -11,7 +11,7 @@ from nonebot.message import CanceledException
 
 log = logging.Logger('random_echo')
 
-ECHO_PROB = 0.008
+ECHO_PROB = 0.01
 
 last_sent = None
 

@@ -23,19 +23,15 @@ async def cal(session: CommandSession):
 
     if arg_len == 0:
         await session.send('你算啥？', at_sender=True)
-        return 
-
-    reply = ''
+        return
 
     try:
         res = me.evaluate(expr_str)
-        if math.isnan(res):
-            raise Exception()
     except:
         await session.send('我读的书少，这能算吗？', at_sender=True)
         return
     
-    reply += '\n结果：' + str(res) 
+    reply = '\n结果：' + str(res) 
     await session.send(reply, at_sender=True)
 
 
