@@ -20,6 +20,8 @@ def recognize_tags(img: Image.Image) -> List[str]:
     return tag_txt_list
 
 # concatenate tag images vertically
+
+
 def v_concat_tag_imgs(tag_img_list: List[Image.Image]) -> Image.Image:
     w = min(img.size[0] for img in tag_img_list)
     h = sum(img.size[1] for img in tag_img_list)
@@ -29,7 +31,7 @@ def v_concat_tag_imgs(tag_img_list: List[Image.Image]) -> Image.Image:
     for img in tag_img_list:
         dst.paste(img, (0, y))
         y += img.size[1]
-    
+
     return dst
 
 
@@ -86,6 +88,7 @@ def recognize_one_tag(img: Image.Image) -> str:
 NOT_NEWLINE_AND_CHINESE = re.compile(r'[^\n\u4E00-\u9FFF]+')
 REPEAT_NEWLINE = re.compile('\n+')
 
+
 def recognize_tag_batch(img: Image.Image) -> List[str]:
     res = ocr.image_to_string(img, lang='chi_sim', config='--psm 11')
 
@@ -103,10 +106,9 @@ def recognize_tag_batch(img: Image.Image) -> List[str]:
     return res_list
 
 
-class UnknownTagError(Exception): 
+class UnknownTagError(Exception):
     pass
 
 
-class InvalidImgError(Exception): 
+class InvalidImgError(Exception):
     pass
-

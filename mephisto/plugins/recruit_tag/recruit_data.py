@@ -1,8 +1,5 @@
 
-RANK6 = {
-    '能天使', '黑', '银灰', '莫斯提马', '夜莺', '星熊', '陈', '阿', '煌',
-    '麦哲伦', '赫拉格', '斯卡蒂', '塞雷娅', '闪灵', '伊芙利特', '推进之王', '刻俄柏',
-}
+
 
 TAGS = {
     '先锋干员', '近卫干员', '狙击干员', '术师干员', '医疗干员', '重装干员', '辅助干员', '特种干员',
@@ -10,6 +7,11 @@ TAGS = {
     '输出', '生存', '支援', '位移', '减速', '费用回复', '群攻',
     '治疗', '控场', '快速复活', '防护', '爆发', '削弱', '召唤',
 }
+
+RANK6_TAG = '高级资深干员'
+RANK5_TAG = '资深干员'
+RANK2_TAG = '新手'
+RANK1_TAG = '支援机械'
 
 RECRUIT_DATA = [
     # ('Lancet-2', 1, ['医疗干员', '远程位', '治疗', '支援机械']),
@@ -120,15 +122,17 @@ RECRUIT_DATA = [
     # ('惊蛰', 5, ['术师干员', '远程位', '输出']),
 ]
 
-OPERATOR_TO_TAG = dict((k, v) for k, rank, v in RECRUIT_DATA)
+RANK6_ALL = [name for name, rank, tags in RECRUIT_DATA if rank == 6]
+
+OPERATOR_TO_TAG = dict((name, tags) for name, rank, tags in RECRUIT_DATA)
 
 
 def load_tag_to_operator():
     res = {}
     for op, rank, tags in RECRUIT_DATA:
         for tag in tags:
-            res.setdefault(tag, set())
-            res[tag].add((rank, op))
+            res.setdefault(tag, [])
+            res[tag].append(op)
     return res
 
 

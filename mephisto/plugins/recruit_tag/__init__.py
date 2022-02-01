@@ -8,6 +8,7 @@ from threading import Lock
 from nonebot import on_command, CommandSession, logger
 
 import recruit_tag.tag_ocr as ocr
+import recruit_tag.analysis as analysis
 
 # param keys
 IMG_CNT = 'img_cnt'
@@ -28,10 +29,10 @@ async def recruit(session: CommandSession):
 
 async def recruit_main(session: CommandSession):
     reply = ''
-    
-    img_url_future = (await session.aget(IMG_URL, prompt='来张截图', at_sender=True))
+
+    img_url_future = session.aget(IMG_URL, prompt='来张截图', at_sender=True)
     try:
-        img_url: str = (await asyncio.wait_for(img_future, 60))
+        img_url: str = (await asyncio.wait_for(img_url_future, 30))
     except asyncio.TimeoutError:
         session.finish('滚滚滚，我不等了', at_sender=True)
 
@@ -57,9 +58,18 @@ async def recruit_main(session: CommandSession):
         logger.warn('invalid image: %s', e)
         reply += '\n你发的是个什么玩意？'
         session.finish(reply, at_sender=True)
-    
+
     tags = ocr.recognize_tags(img)
-    reply += '\ntag：\n- ' + '\n- '.join(tags)
+
+    try:
+        res = analysis.rank6_analysis(tags)
+    except analysis.NoRank6Error:
+        reply += '\n没高资也好意思叫我？'
+        session.finish(reply, at_sender=True)
+
+    res_str = '\n\n'.join(str(r) for r in res)
+
+    reply += '\n\n' + res_str
 
     await session.send(reply, at_sender=True)
 
