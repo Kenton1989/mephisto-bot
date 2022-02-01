@@ -1,17 +1,17 @@
 import os
 import logging
+import asyncio
 from PIL import Image
 from urllib.request import urlopen
 from threading import Lock
 
 from nonebot import on_command, CommandSession, logger
 
-import tag_ocr as ocr
+import recruit_tag.tag_ocr as ocr
 
 # param keys
 IMG_CNT = 'img_cnt'
 IMG_URL = 'img_url'
-IMG = 'img'
 
 cmd_mux = Lock()
 
@@ -28,8 +28,12 @@ async def recruit(session: CommandSession):
 
 async def recruit_main(session: CommandSession):
     reply = ''
-
-    img: Image.Image = session.aget(IMG, prompt='来张截图', at_sender=True)
+    
+    img_url_future = (await session.aget(IMG_URL, prompt='来张截图', at_sender=True))
+    try:
+        img_url: str = (await asyncio.wait_for(img_future, 60))
+    except asyncio.TimeoutError:
+        session.finish('滚滚滚，我不等了', at_sender=True)
 
     img_cnt = session.state[IMG_CNT]
     if img_cnt > 1:
@@ -38,9 +42,20 @@ async def recruit_main(session: CommandSession):
         session.finish('不给图拉倒', at_sender=True)
 
     try:
+        img = download_img(img_url)
+    except Exception as e:
+        logger.error('image download error: %s', e)
+        session.finish('我图读不出来，sb🐧', at_sender=True)
+
+    try:
         tag_list = ocr.recognize_tags(img)
     except ocr.UnknownTagError as e:
-        reply += '\n看不懂的tag：' + str(e)
+        logger.warn('unknown tag: %s', e)
+        reply += '\n看不懂的tag：\n' + str(e)
+        session.finish(reply, at_sender=True)
+    except ocr.InvalidImgError as e:
+        logger.warn('invalid image: %s', e)
+        reply += '\n你发的是个什么玩意？'
         session.finish(reply, at_sender=True)
     
     tags = ocr.recognize_tags(img)
@@ -58,11 +73,6 @@ async def extract_img(session: CommandSession):
     if img_cnt > 0:
         url = images[0]
         session.state[IMG_URL] = url
-        try:
-            session.state[IMG] = download_img(url)
-        except Exception as e:
-            logger.error('image download error: %s', e)
-            session.finish('我图读不出来，sb🐧', at_sender=True)
 
 
 def download_img(url: str) -> Image.Image:

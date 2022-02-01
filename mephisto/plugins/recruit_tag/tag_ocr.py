@@ -4,12 +4,17 @@ import re
 import pytesseract as ocr
 from PIL import Image, ImageStat
 
-import recruit_data as db
+import recruit_tag.recruit_data as db
 
 
 def recognize_tags(img: Image.Image) -> List[str]:
     tag_img_list = crop_tags(img)
     tag_img_batch = v_concat_tag_imgs(tag_img_list)
+
+    stat = ImageStat.Stat(tag_img_batch)
+    if stat.mean[0] < 210:
+        return InvalidImgError('average brightness of tag image batch is too low')
+
     tag_txt_list = recognize_tag_batch(tag_img_batch)
 
     return tag_txt_list
@@ -77,15 +82,20 @@ def recognize_one_tag(img: Image.Image) -> str:
         raise UnknownTagError(res)
     return res
 
+
+NOT_NEWLINE_AND_CHINESE = re.compile(r'[^\n\u4E00-\u9FFF]+')
 REPEAT_NEWLINE = re.compile('\n+')
 
 def recognize_tag_batch(img: Image.Image) -> List[str]:
     res = ocr.image_to_string(img, lang='chi_sim', config='--psm 11')
 
-    # remove space
-    res = res.replace(' ', '').strip()
+    # remove non-useful char
+    res = re.sub(NOT_NEWLINE_AND_CHINESE, '', res).strip()
     # split with newline
     res_list = re.split(REPEAT_NEWLINE, res)
+
+    if len(res_list) != 5:
+        raise InvalidImgError('cannot recognize all 5 tags')
 
     for word in res_list:
         if word not in db.TAGS:
@@ -94,5 +104,9 @@ def recognize_tag_batch(img: Image.Image) -> List[str]:
 
 
 class UnknownTagError(Exception): 
+    pass
+
+
+class InvalidImgError(Exception): 
     pass
 

@@ -3,8 +3,6 @@ import logging
 
 from nonebot import on_command, CommandSession, get_bot
 
-import env
-
 l = logging.Logger('/hello')
 
 @on_command('hello', aliases=('你好'))
