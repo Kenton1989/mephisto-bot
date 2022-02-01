@@ -34,7 +34,7 @@ async def recruit_main(session: CommandSession):
     try:
         img_url: str = (await asyncio.wait_for(img_url_future, 30))
     except asyncio.TimeoutError:
-        session.finish('滚滚滚，我不等了', at_sender=True)
+        session.finish('不给图拉倒，我不等了', at_sender=True)
 
     img_cnt = session.state[IMG_CNT]
     if img_cnt > 1:
