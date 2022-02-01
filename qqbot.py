@@ -8,17 +8,12 @@ import nonebot
 
 import qqconfig
 
-l = logging.Logger("qqbot")
-
 if __name__ == '__main__':
     if qqconfig.ACCESS_TOKEN == '':
-        l.warning("ACCESS_TOKEN is not set")
+        nonebot.logger.warning("ACCESS_TOKEN is not set")
 
     if len(qqconfig.SUPERUSERS) == 0:
-        l.warning("SUPERUSERS is not set")
-    else:
-        owners = ":".join(str(id) for id in qqconfig.SUPERUSERS)
-        os.environ["QQ_BOT_SU"] = owners
+        nonebot.logger.warning("SUPERUSERS is not set")
         
     plugins_folder = path.join(path.dirname(__file__),"mephisto", "plugins")
     sys.path.append(plugins_folder)
