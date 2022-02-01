@@ -8,12 +8,20 @@ import recruit_tag.recruit_data as db
 
 
 def recognize_tags(img: Image.Image) -> List[str]:
+    w, h = img.size
+    if h > w:
+        raise InvalidImgError(f'invalid image width/height ratio: {w/h}')
+
+    if h < 720 or w < 720:
+        raise InvalidImgError(f'resolution too low: {w}x{h}')
+
     tag_img_list = crop_tags(img)
     tag_img_batch = v_concat_tag_imgs(tag_img_list)
 
     stat = ImageStat.Stat(tag_img_batch)
     if stat.mean[0] < 210:
-        return InvalidImgError('average brightness of tag image batch is too low')
+        raise InvalidImgError(
+            f'average brightness of tag image batch is too low {stat.mean[0]}')
 
     tag_txt_list = recognize_tag_batch(tag_img_batch)
 
@@ -96,9 +104,11 @@ def recognize_tag_batch(img: Image.Image) -> List[str]:
     res = re.sub(NOT_NEWLINE_AND_CHINESE, '', res).strip()
     # split with newline
     res_list = re.split(REPEAT_NEWLINE, res)
+    # unique elements
+    res_list = list(set(res_list))
 
     if len(res_list) != 5:
-        raise InvalidImgError('cannot recognize all 5 tags')
+        raise InvalidImgError(f'cannot recognize all 5 tags, got {res_list}')
 
     for word in res_list:
         if word not in db.TAGS:

@@ -48,6 +48,11 @@ async def recruit_main(session: CommandSession):
         logger.error('image download error: %s', e)
         session.finish('我图读不出来，sb🐧', at_sender=True)
 
+    w, h = img.size
+    if h < 720 or w < 720:
+        session.finish(reply+'\n能不能来张高清点的图？', at_sender=True)
+
+
     try:
         tag_list = ocr.recognize_tags(img)
     except ocr.UnknownTagError as e:
