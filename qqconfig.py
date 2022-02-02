@@ -19,5 +19,7 @@ COMMAND_START = [re.compile(r'[/!／！]')]
 
 ACCESS_TOKEN = ''
 
+API_ROOT = 'http://127.0.0.1:5700/'
+
 HOST = 'localhost'
 PORT = 44444

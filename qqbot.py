@@ -17,6 +17,9 @@ if __name__ == '__main__':
 
     if len(qqconfig.SUPERUSERS) == 0:
         log.warning("SUPERUSERS is not set")
+    
+    if qqconfig.API_ROOT == '':
+        raise ValueError('API_ROOT is not set')
 
     plugins_folder = path.join(path.dirname(__file__), "mephisto", "plugins")
     sys.path.append(plugins_folder)

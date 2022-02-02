@@ -47,9 +47,9 @@ async def recruit_main(session: CommandSession):
         session.finish('\n我图读不出来，sb🐧', at_sender=True)
     
     if img_cnt > 1:
-        session.send('\n我只管第一张图', at_sender=True)
+        await session.send('\n我只管第一张图', at_sender=True)
     else:
-        session.send('\n稍等一下', at_sender=True)
+        await session.send('\n稍等一下', at_sender=True)
 
     w, h = img.size
     if h < 400 or w < 400:
