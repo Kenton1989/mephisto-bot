@@ -43,7 +43,7 @@ async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: Plug
     if any(m.type not in CAN_ECHO_TYPE for m in msg):
         return
 
-    nonebot.logger.info("triggered random_echo @[group: %d]", event.group_id)
+    log.info("triggered random_echo @[group: %d]", event.group_id)
     last_sent = msg
 
     await bot.send(event, msg)

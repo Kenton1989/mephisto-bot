@@ -5,7 +5,7 @@ from nonebot import on_command, CommandSession
 
 import math_expr as me
 
-l = logging.Logger('/cal')
+log = logging.Logger('/cal')
 
 MAX_PARAM_TXT_LEN = 50
 
@@ -28,6 +28,7 @@ async def cal(session: CommandSession):
     try:
         res = me.evaluate(expr_str)
     except:
+        log.warning('unknown expression %s', expr_str)
         await session.send('我读的书少，这能算吗？', at_sender=True)
         return
     

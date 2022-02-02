@@ -4,18 +4,21 @@ import sys
 import logging
 from os import path
 
+import qqconfig
+
 import nonebot
 
-import qqconfig
+
+log = logging.getLogger('mephisto-main')
 
 if __name__ == '__main__':
     if qqconfig.ACCESS_TOKEN == '':
-        nonebot.logger.warning("ACCESS_TOKEN is not set")
+        log.warning("ACCESS_TOKEN is not set")
 
     if len(qqconfig.SUPERUSERS) == 0:
-        nonebot.logger.warning("SUPERUSERS is not set")
-        
-    plugins_folder = path.join(path.dirname(__file__),"mephisto", "plugins")
+        log.warning("SUPERUSERS is not set")
+
+    plugins_folder = path.join(path.dirname(__file__), "mephisto", "plugins")
     sys.path.append(plugins_folder)
     print("plugins folder", plugins_folder)
 

@@ -3,7 +3,7 @@ import logging
 
 from nonebot import on_command, CommandSession, get_bot
 
-l = logging.Logger('/hello')
+log = logging.Logger('/hello')
 
 @on_command('hello', aliases=('你好'))
 async def hello(session: CommandSession):

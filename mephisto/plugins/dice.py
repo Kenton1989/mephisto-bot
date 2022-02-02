@@ -8,7 +8,7 @@ from nonebot import on_command, CommandSession
 
 import math_expr as me
 
-l = logging.Logger('/dice')
+log = logging.Logger('/dice')
 
 MAX_PARAM_TXT_LEN = 12
 
@@ -53,7 +53,6 @@ async def dice(session: CommandSession):
 
     mx_int = int(mx)
     fraction = mx - mx_int
-    SUB_MAP = {'（': '(', '）': ')', 'ln': 'log'}
     if fraction > EPS:
         if fraction >= 0.01:
             rep = '你家骰子能有%.2f个面？' % fraction

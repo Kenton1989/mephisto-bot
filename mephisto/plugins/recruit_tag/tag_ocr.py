@@ -12,7 +12,7 @@ def recognize_tags(img: Image.Image) -> List[str]:
     if h > w:
         raise InvalidImgError(f'invalid image width/height ratio: {w/h}')
 
-    if h < 720 or w < 720:
+    if h < 500 or w < 500:
         raise InvalidImgError(f'resolution too low: {w}x{h}')
 
     tag_img_list = crop_tags(img)
