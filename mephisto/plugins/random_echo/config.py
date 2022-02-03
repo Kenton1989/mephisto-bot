@@ -1,0 +1,5 @@
+
+DEFAULT_ECHO_PROB = 0.05
+
+ECHO_PROB = {
+}

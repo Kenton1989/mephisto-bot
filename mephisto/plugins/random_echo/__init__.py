@@ -11,11 +11,9 @@ from nonebot import NoneBot, CommandSession, on_command
 from nonebot.plugin import PluginManager
 from nonebot.message import CanceledException
 
-log = logging.getLogger('random_echo')
+from random_echo.config import *
 
-DEFAULT_ECHO_PROB = 0.05
-ECHO_PROB = {
-}
+log = logging.getLogger('random_echo')
 
 last_sent = None
 
