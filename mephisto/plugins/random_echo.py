@@ -42,55 +42,7 @@ group_stats: Dict[int, Stat] = {}
 group_sender_stats: Dict[int, Dict[int, Stat]] = {}
 
 
-@nonebot.message_preprocessor
-async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: PluginManager):
-    # check event type
-    if event.type != "message" or event.detail_type != "group":
-        return
-
-    if event.self_id == event.user_id:
-        return
-
-    msg: aiocqhttp.Message = event.message
-
-    global group_stats, group_sender_stats
-    group_stat = group_stats.setdefault(event.group_id, Stat())
-    sender_stats = group_sender_stats.setdefault(event.group_id, {})
-    sender_stat = sender_stats.setdefault(event.user_id, Stat())
-
-    group_stat.total_msg += 1
-    sender_stat.total_msg += 1
-
-    if random.random() > ECHO_PROB:
-        return
-
-    # avoid infinit echo
-    global last_sent
-    if msg == last_sent:
-        return
-
-    # check if msg maybe a command
-    msg_str: str = msg.extract_plain_text()
-    for cmd_prefix in bot.config.COMMAND_START:
-        if re.match(cmd_prefix, msg_str):
-            return
-
-    # check can easily echo or not
-    if any(m.type not in CAN_ECHO_TYPE for m in msg):
-        return
-
-    group_stat.total_rep += 1
-    sender_stat.total_rep += 1
-
-    log.info("triggered random_echo @[group: %d]", event.group_id)
-    last_sent = msg
-
-    await bot.send(event, msg)
-
-    raise CanceledException("random echo handled")
-
-
-@on_command('random_echo_stat', aliases=('复读统计', '复读报告', '复读数据'), privileged=True)
+@on_command('random-echo-stat', aliases=('复读统计', '复读报告', '复读数据'), permission=nonebot.permission.SUPERUSER)
 async def echo_stat(session: CommandSession):
     event = session.event
     grp_id = event.group_id
@@ -139,3 +91,52 @@ async def echo_stat(session: CommandSession):
         msg += f"\n\n复读触发率最高的是：\n{top_rep_ratio_user['nickname']}({top_rep_ratio[0]})\n{t_stat.total_msg}次发言触发了{t_stat.total_rep}次复读，比例为{t_stat.rep_ratio}。"
 
     await session.send(msg, at_sender=True)
+
+
+@nonebot.message_preprocessor
+async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: PluginManager):
+    # check event type
+    if event.type != "message" or event.detail_type != "group":
+        return
+
+    if event.self_id == event.user_id:
+        return
+
+    msg: aiocqhttp.Message = event.message
+
+    global group_stats, group_sender_stats
+    group_stat = group_stats.setdefault(event.group_id, Stat())
+    sender_stats = group_sender_stats.setdefault(event.group_id, {})
+    sender_stat = sender_stats.setdefault(event.user_id, Stat())
+
+    group_stat.total_msg += 1
+    sender_stat.total_msg += 1
+
+    if random.random() > ECHO_PROB:
+        return
+
+    # avoid infinit echo
+    global last_sent
+    if msg == last_sent:
+        return
+
+    # check if msg maybe a command
+    msg_str: str = msg.extract_plain_text()
+    for cmd_prefix in bot.config.COMMAND_START:
+        if re.match(cmd_prefix, msg_str):
+            return
+
+    # check can easily echo or not
+    if any(m.type not in CAN_ECHO_TYPE for m in msg):
+        return
+
+    group_stat.total_rep += 1
+    sender_stat.total_rep += 1
+
+    log.info("triggered random_echo @[group: %d]", event.group_id)
+    last_sent = msg
+
+    await bot.send(event, msg)
+
+    raise CanceledException("random echo handled")
+
