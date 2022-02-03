@@ -5,7 +5,7 @@ from nonebot import on_command, CommandSession
 
 import math_expr as me
 
-log = logging.Logger('/cal')
+log = logging.getLogger('/cal')
 
 MAX_PARAM_TXT_LEN = 50
 

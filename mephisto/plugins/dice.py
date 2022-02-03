@@ -8,7 +8,7 @@ from nonebot import on_command, CommandSession
 
 import math_expr as me
 
-log = logging.Logger('/dice')
+log = logging.getLogger('/dice')
 
 MAX_PARAM_TXT_LEN = 12
 
