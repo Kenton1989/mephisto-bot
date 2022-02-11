@@ -73,16 +73,18 @@ def get_tag_pos(vw: float, vh: float) -> List[Tuple[float]]:
 
 
 def binarise_tag_img(img: Image.Image) -> Image.Image:
-    lightness = img.convert('L')
-    stat = ImageStat.Stat(lightness)
-    if stat.mean[0] < 128:
-        # black background, turn to white background
-        def fn(m): return 255 if m < 128 else 0
-    else:
-        # white background, keep white background
-        def fn(m): return 255 if m > 128 else 0
+    # assuming dark background and white text
+    # convert to white background and black text
+    res = img.convert('L').point(lambda m: 255 if m < 128 else 0, mode='1')
+    stat = ImageStat.Stat(res)
 
-    return lightness.point(fn, mode='1')
+    # if the lightness to low, means black ground is used, convert to white background
+    if stat.mean[0] < 128:
+        # ImageOps does not support inverting "L" format image
+        # invert on my own
+        res = res.point(lambda m: 255 - m, mode='1')
+
+    return res
 
 
 def recognize_one_tag(img: Image.Image) -> str:
