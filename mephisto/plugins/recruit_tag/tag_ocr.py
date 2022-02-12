@@ -91,7 +91,7 @@ def recognize_one_tag(img: Image.Image) -> str:
     res = ocr.image_to_string(img, lang='chi_sim', config='--psm 11')
     res = res.replace(' ', '').strip()
     if res not in TAGS:
-        raise UnknownTagError(res)
+        res = auto_correct(res)
     return res
 
 
@@ -117,6 +117,8 @@ def recognize_tag_batch(img: Image.Image) -> List[str]:
             raise UnknownTagError(word)
     return res_list
 
+def auto_correct(word: str) -> str:
+    raise UnknownTagError(word)
 
 class UnknownTagError(Exception):
     pass

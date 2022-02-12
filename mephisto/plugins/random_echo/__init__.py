@@ -2,6 +2,10 @@ import logging
 import re
 import random
 import datetime
+import os
+import json
+import atexit
+import threading
 from typing import Dict, Tuple
 
 import aiocqhttp
@@ -22,7 +26,9 @@ CAN_ECHO_TYPE = {'text', 'face'}
 
 class Stat:
     def __init__(self, data: dict = {}):
-        self.start_time = data.get('start-time', datetime.datetime.now())
+        timestamp = data.get(
+            'start-time', datetime.datetime.utcnow().timestamp())
+        self.start_time = datetime.datetime.utcfromtimestamp(timestamp)
         self.total_msg = data.get('total-msg', 0)
         self.total_rep = data.get('total-rep', 0)
 
@@ -30,9 +36,9 @@ class Stat:
     def rep_ratio(self):
         return self.total_rep / self.total_msg
 
-    def to_dict():
+    def to_dict(self):
         return {
-            'start-time': self.start_time,
+            'start-time': self.start_time.timestamp(),
             'total-msg': self.total_msg,
             'total-rep': self.total_rep,
         }
@@ -41,6 +47,44 @@ class Stat:
 group_stats: Dict[int, Stat] = {}
 group_sender_stats: Dict[int, Dict[int, Stat]] = {}
 
+
+def load_stat(filename='random_echo.stat.json'):
+    if not os.path.exists(filename):
+        return
+
+    with open(filename, 'r') as file:
+        data = json.load(file)
+
+    global group_stats, group_sender_stats
+
+    group_stats = dict((int(k), Stat(v))
+                       for k, v in data.get('group_stats', {}).items())
+
+    group_sender_stats_raw = data.get('group_sender_stats', {})
+    for k, v in group_sender_stats_raw.items():
+        v = dict((int(k0), Stat(v0)) for k0, v0 in v.items())
+        group_sender_stats[int(k)] = v
+
+
+def save_stat(filename='random_echo.stat.json'):
+    global group_stats, group_sender_stats
+    data = {}
+    data['group_stats'] = dict((str(k), v.to_dict())
+                               for k, v in group_stats.items())
+    data['group_sender_stats'] = {}
+    for k, v in group_sender_stats.items():
+        v = dict((str(k0), v0.to_dict()) for k0, v0 in v.items())
+        data['group_sender_stats'][str(k)] = v
+
+    with open(filename, 'w') as file:
+        json.dump(data, file)
+
+
+load_stat()
+# auto save on exit
+atexit.register(save_stat)
+# auto save every 1 minute
+threading.Timer(60, save_stat)
 
 @nonebot.message_preprocessor
 async def random_echo(bot: NoneBot, event: aiocqhttp.Event, plugin_manager: PluginManager):
